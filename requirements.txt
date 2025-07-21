@@ -5,3 +5,4 @@ torchvision
 pillow
 pymongo
 python-multipart
+ultralytics==8.*
