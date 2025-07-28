@@ -1,0 +1,27 @@
+# 파이썬/패키지/가상환경
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDE/에디터 설정
+.idea/
+.vscode/
+*.iml
+
+# 도커/컨테이너 관련
+*.db
+*.sqlite3
+
+# 환경/비밀정보
+.env
+.env.*
+
+# YOLO 관련 무시
+runs/
+dataset/
