@@ -8,3 +8,4 @@ python-multipart
 ultralytics==8.*
 pandas
 python-dotenv
+google-cloud-storage
