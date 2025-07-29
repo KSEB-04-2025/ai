@@ -22,7 +22,7 @@ if not MONGO_URI:
 if not GCS_BUCKET:
     raise RuntimeError("GCS_BUCKET 환경변수가 없습니다.")
 
-# ───────── 기본 설정 ─────────
+# ───────── 기본 설정 ────────
 app = FastAPI()
 model = YOLO("model/best.pt")  # YOLOv8 모델 로드
 UPLOAD_DIR = "uploaded_images"
