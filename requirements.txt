@@ -7,3 +7,4 @@ pymongo
 python-multipart
 ultralytics==8.*
 pandas
+python-dotenv
