@@ -38,7 +38,7 @@ storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
 bucket = storage_client.bucket(GCS_BUCKET)
 
 # ───────── 이미지 업로드 + 예측 ─────────
-@app.post("/defect/", tags=["Defect Classification"])
+@app.post("/defect/", summary = ["Defect Classification"])
 async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     now = datetime.now()
     timestamp_str = now.strftime("%Y%m%d_%H%M%S")
@@ -89,7 +89,11 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
             "n_spots": len(predictions),
             "predictions": predictions
         })
-
+        
+    print("DEBUG: class_names =", class_names)
+    print("DEBUG: is_defective =", is_defective)
+    print("DEBUG: predictions =", predictions)
+    
     # 결함이 있는 경우만 아래 실행
     label = "X"
 
