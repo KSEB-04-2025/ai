@@ -52,7 +52,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
 
     # 이미지 열기
     try:
-        img = Image.open(io.BytesIO(image_bytes))
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     except Exception as e:
         return JSONResponse(status_code=400, content={"message": f"이미지 열기 실패: {e}"})
 
@@ -117,7 +117,6 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
             # GCS 업로드
             blob = bucket.blob(f"{GCS_FOLDER}/{filename}")
             blob.upload_from_filename(annotated_path)
-            blob.make_public()
             gcs_url = f"https://storage.googleapis.com/{GCS_BUCKET}/{blob.name}"
     except Exception as e:
         print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
