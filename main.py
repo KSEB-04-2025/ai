@@ -26,6 +26,7 @@ if not GCS_BUCKET:
 # ───────── 기본 설정 ─────────
 app = FastAPI()
 model = YOLO("model/best.pt")  # YOLOv8 모델 로드
+print("🔥🔥🔥 This is the NEW main.py 🔥🔥🔥")  # <-- 여기에 삽입
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -38,7 +39,7 @@ storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
 bucket = storage_client.bucket(GCS_BUCKET)
 
 # ───────── 이미지 업로드 + 예측 ─────────
-@app.post("/defect/", summary = ["Defect Classification"])
+@app.post("/defect/", summary = "Defect Classification3232")
 async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     now = datetime.now()
     timestamp_str = now.strftime("%Y%m%d_%H%M%S")
