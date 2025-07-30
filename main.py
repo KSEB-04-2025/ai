@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
+from fastapi.openapi.utils import get_openapi
 from datetime import datetime
 from ultralytics import YOLO
 from PIL import Image
@@ -22,7 +23,7 @@ if not MONGO_URI:
 if not GCS_BUCKET:
     raise RuntimeError("GCS_BUCKET 환경변수가 없습니다.")
 
-# ───────── 기본 설정 ────────
+# ───────── 기본 설정 ─────────
 app = FastAPI()
 model = YOLO("model/best.pt")  # YOLOv8 모델 로드
 UPLOAD_DIR = "uploaded_images"
@@ -37,7 +38,7 @@ storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
 bucket = storage_client.bucket(GCS_BUCKET)
 
 # ───────── 이미지 업로드 + 예측 ─────────
-@app.post("/defect/")
+@app.post("/defect/", tags=["Defect Classification"])
 async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     now = datetime.now()
     timestamp_str = now.strftime("%Y%m%d_%H%M%S")
@@ -92,24 +93,31 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     # 결함이 있는 경우만 아래 실행
     label = "X"
 
-    # Annotated 이미지 저장 및 업로드 to GCS
+     # Annotated 이미지 저장 및 업로드 to GCS
     annotated_path = None
     gcs_url = None
     try:
-        annotated_img = results[0].plot()
-        annotated_path = file_path.replace("uploaded_images", "uploaded_images/annotated")
-        os.makedirs(os.path.dirname(annotated_path), exist_ok=True)
-        cv2.imwrite(annotated_path, annotated_img)
+        if hasattr(results[0], "plot"):
+            annotated_img = results[0].plot()
+        elif hasattr(results[0], "plot_result"):
+            annotated_img = results[0].plot_result()
+        else:
+            print("[경고] plot() 사용 불가: ", type(results[0]))
+            annotated_img = None
 
-        # GCS 업로드
-        blob = bucket.blob(f"{GCS_FOLDER}/{filename}")
-        blob.upload_from_filename(annotated_path)
-        blob.make_public()
-        gcs_url = f"https://storage.googleapis.com/{GCS_BUCKET}/{blob.name}"
-        if gcs_url is None:
-            return JSONResponse(status_code=500, content={"message": "GCS 업로드 실패로 URL 생성 불가"})
+        if annotated_img is not None:
+            annotated_path = file_path.replace("uploaded_images", "uploaded_images/annotated")
+            os.makedirs(os.path.dirname(annotated_path), exist_ok=True)
+            cv2.imwrite(annotated_path, annotated_img)
+
+            # GCS 업로드
+            blob = bucket.blob(f"{GCS_FOLDER}/{filename}")
+            blob.upload_from_filename(annotated_path)
+            blob.make_public()
+            gcs_url = f"https://storage.googleapis.com/{GCS_BUCKET}/{blob.name}"
     except Exception as e:
         print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
+
 
     # MongoDB 문서 구성
     mongo_doc = {
