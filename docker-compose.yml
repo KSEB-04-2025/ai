@@ -13,6 +13,8 @@ services:
       - .env
     networks:
       - app-network
+    volumes:
+      - /home/zezeonekesb/service-account.json:/app/service-account.json
 
 networks:
   app-network:

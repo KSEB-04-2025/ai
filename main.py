@@ -16,7 +16,7 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 GCS_BUCKET = os.getenv("GCS_BUCKET")  # GCS 버킷 이름
 GCS_FOLDER = os.getenv("GCS_FOLDER")
-GCS_KEY_PATH = "service_account.json"  # GCS 서비스 계정 키 파일 경로
+GCS_KEY_PATH = "service-account.json"  # GCS 서비스 계정 키 파일 경로
 
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI 환경변수가 없습니다.")

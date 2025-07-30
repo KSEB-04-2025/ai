@@ -25,6 +25,7 @@ services:
       - MONGODB_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_DB_NAME}?authSource=admin
     volumes:
       - .:/app
+      - C:/service-account.json:/app/service-account.json
     restart: unless-stopped
 
 volumes:
