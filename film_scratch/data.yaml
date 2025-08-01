@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['defect']
+
+roboflow:
+  workspace: kseb-cevxm
+  project: film_kseb-rb7m1
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/kseb-cevxm/film_kseb-rb7m1/dataset/2
