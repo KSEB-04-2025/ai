@@ -32,7 +32,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ───────── MongoDB 연결 ─────────
 client = MongoClient(MONGO_URI)
-mongo_col = client["zezeone"]["results"]
+mongo_col = client["zezeone"]["results_ex"]
 
 # ───────── GCS 클라이언트 ─────────
 storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
@@ -135,8 +135,8 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
         "n_spots": len(predictions),
         "img_file_id": filename,
         "img_url": gcs_url,
-        "uploadDate": now.isoformat(),
-        "date_time": now.isoformat(),
+        "uploadDate": now_utc,
+        "date_time": now_utc,
         "client_ip": request.client.host
     }
 
