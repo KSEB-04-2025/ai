@@ -32,7 +32,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ───────── MongoDB 연결 ─────────
 client = MongoClient(MONGO_URI)
-mongo_col = client["zezeone"]["results_ex"]
+mongo_col = client["zezeone"]["results"]
 
 # ───────── GCS 클라이언트 ─────────
 storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
