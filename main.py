@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from fastapi.openapi.utils import get_openapi
-from datetime import datetime
+from datetime import datetime, timezone
 from ultralytics import YOLO
 from PIL import Image
 from pymongo import MongoClient
@@ -42,8 +42,7 @@ bucket = storage_client.bucket(GCS_BUCKET)
 @app.post("/defect/", summary = "Defect Classification3232")
 async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     now = datetime.now()
-    timestamp_str = now.strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp_str}_{file.filename}"
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid4().hex}.png"
     file_path = os.path.join(UPLOAD_DIR, filename)
 
     # 이미지 저장
@@ -122,9 +121,16 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     except Exception as e:
         print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
 
-
+    # datetime.now()을 UTC로 변환 
+    now_utc = datetime.now(timezone.utc)
+    
+    # 아이디 임의로 생성
+    count = mongo_col.count_documents({})
+    mongo_doc_id = f"defect_{count + 1}"
+    
     # MongoDB 문서 구성
     mongo_doc = {
+        "id": mongo_doc_id,
         "label": label,
         "n_spots": len(predictions),
         "img_file_id": filename,
