@@ -102,40 +102,24 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     gcs_url = None
     try:
         if hasattr(results[0], "plot"):
-            print("✅ results[0] 에 plot() 있음")
             annotated_img = results[0].plot()
         elif hasattr(results[0], "plot_result"):
-            print("✅ results[0] 에 plot_result() 있음")
             annotated_img = results[0].plot_result()
         else:
-            print("❌ plot 관련 메서드 없음:", type(results[0]))
+            print("[경고] plot() 사용 불가: ", type(results[0]))
             annotated_img = None
 
         if annotated_img is not None:
             annotated_path = file_path.replace("uploaded_images", "uploaded_images/annotated")
-            print("✅ annotated_path 생성:", annotated_path)
-
             os.makedirs(os.path.dirname(annotated_path), exist_ok=True)
-            saved = cv2.imwrite(annotated_path, annotated_img)
-            print(f"✅ cv2.imwrite 성공 여부: {saved}")
-
-            # 실제로 이미지 파일 존재하는지 확인
-            print("✅ 파일 존재 여부:", os.path.exists(annotated_path))
+            cv2.imwrite(annotated_path, annotated_img)
 
             # GCS 업로드
-            blob_path = f"{GCS_FOLDER}/{filename}" if GCS_FOLDER else filename
-            blob = bucket.blob(blob_path)
+            blob = bucket.blob(f"{GCS_FOLDER}/{filename}")
             blob.upload_from_filename(annotated_path)
-            gcs_url = f"https://storage.googleapis.com/{GCS_BUCKET}/{blob_path}"
-            print("✅ 업로드 경로:", blob_path)
-            print("✅ GCS URL:", gcs_url)
-            print("✅ blob.exists()?:", blob.exists())
-
-        else:
-            print("❌ annotated_img is None. YOLO 시각화 실패 가능성 있음.")
-
+            gcs_url = f"https://storage.googleapis.com/{GCS_BUCKET}/{blob.name}"
     except Exception as e:
-        print("[❌ 예외] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
+        print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
 
     # datetime.now()을 UTC로 변환 
     now_utc = datetime.now(timezone.utc)
@@ -149,7 +133,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
         "id": mongo_doc_id,
         "label": label,
         "n_spots": len(predictions),
-        "img_file_id": filename,
+        "img_file_id": "defect/" + filename,
         "img_url": gcs_url,
         "uploadDate": now_utc,
         "date_time": now_utc,
