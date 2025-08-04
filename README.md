@@ -23,6 +23,6 @@
 
 # 사용방법
 
-    yolo detect predict model=runs/train/baseline_full_finetune/weights/best.pt source=film_infer/images conf=0.25 iou=0.45
+    yolo detect predict model=model/weights/best.pt source=film_infer/images conf=0.25 iou=0.45
 
 결과는 `runs/detect/predict` 폴더에 저장됩니다.
