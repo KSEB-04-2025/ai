@@ -25,3 +25,4 @@ build/
 # YOLO 관련 무시
 runs/
 dataset/
+new_data/
