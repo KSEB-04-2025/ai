@@ -137,7 +137,6 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     mongo_doc = {
         "_id": mongo_doc_id,
         "label": label,
-        "n_spots": len(predictions),
         "img_file_id": "defect/" + filename,
         "img_url": gcs_url,
         "uploadDate": now_utc,
