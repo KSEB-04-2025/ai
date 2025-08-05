@@ -63,7 +63,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
 
     # YOLO 예측
     try:
-        results = model(img)
+        results = model(img, conf=0.25, iou=0.45)
     except Exception as e:
         return JSONResponse(status_code=500, content={"message": f"YOLO 예측 실패: {e}"})
 
