@@ -38,6 +38,11 @@ mongo_col = client["zezeone"]["results"]
 storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
 bucket = storage_client.bucket(GCS_BUCKET)
 
+# ───────── Health ─────────
+@app.head("/health")
+def health():
+    return {"status": "ok"}
+    
 # ───────── 이미지 업로드 + 예측 ─────────
 @app.post("/defect/", summary = "Defect Classification3232")
 async def upload_and_predict(request: Request, file: UploadFile = File(...)):
