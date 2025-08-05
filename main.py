@@ -135,7 +135,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     
     # MongoDB 문서 구성
     mongo_doc = {
-        "id": mongo_doc_id,
+        "_id": mongo_doc_id,
         "label": label,
         "n_spots": len(predictions),
         "img_file_id": "defect/" + filename,
