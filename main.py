@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from fastapi.openapi.utils import get_openapi
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from ultralytics import YOLO
 from PIL import Image
 from pymongo import MongoClient
@@ -126,8 +126,10 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     except Exception as e:
         print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
 
-    # datetime.now()을 UTC로 변환 
-    now_utc = datetime.now(timezone.utc)
+    # 한국시간 KST 생성
+    KST = timezone(timedelta(hours=9))
+    now_kst = datetime.now(KST)
+    ts_ms   = int(now_kst.timestamp() * 1000)
     
     # 아이디 임의로 생성
     count = mongo_col.count_documents({})
@@ -139,8 +141,8 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
         "label": label,
         "img_file_id": "defect/" + filename,
         "img_url": gcs_url,
-        "uploadDate": now_utc,
-        "date_time": now_utc,
+        "uploadDate": now_kst,
+        "date_time": now_kst,
         "client_ip": request.client.host
     }
 
