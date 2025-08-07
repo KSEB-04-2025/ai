@@ -158,3 +158,5 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
         "gcs_url": gcs_url,
         "predictions": predictions
     })
+
+
