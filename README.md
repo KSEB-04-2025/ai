@@ -1,8 +1,7 @@
-# 🔍 결함 탐지 AI (YOLOv8s 기반)
+# 🔍 결함 탐지 AI 시스템 (YOLOv8s 기반)
 
-이 프로젝트는 학습된 YOLOv8s 모델(`best.pt`)을 사용하여  
-단일 이미지 또는 이미지 폴더에서 **결함(예: 스크래치)**을 탐지합니다.  
-탐지 결과는 시각화된 이미지와 함께 텍스트 파일로 저장됩니다.
+본 프로젝트는 **YOLOv8n 모델**을 기반으로 결함(예: 스크래치)을 탐지하는 시스템입니다.  
+단일 이미지 예측, 실시간 웹캠 감지, 그리고 GCS에서 100장 이상의 이미지가 수집되면 자동 라벨링 및 재학습까지 수행하는 **자동화된 재학습 파이프라인**을 포함합니다.
 
 ---
 
@@ -10,16 +9,19 @@
 
 | 경로 | 설명 |
 |------|------|
-| `model/best.pt` | 학습된 YOLOv8s 결함 탐지 모델 |
-| `predict.py` | 단일 이미지 또는 폴더 예측 코드 |
-| `predict_cam.py` | 실시간 웹캠 결함 감지 |
-| `model/result/` | 예측된 이미지와 텍스트 저장 경로 |
-| `test_images/` | 테스트 이미지 폴더 (선택) |
-
+| `model/best.pt` | 최신 YOLOv8 결함 탐지 모델 |
+| `model/result/` | 예측 결과 이미지 및 `.txt` 저장 경로 |
+| `incoming_data/` | GCS에서 복사된 원본 이미지 저장 폴더 |
+| `autolabeled_data/labels/` | 자동 생성된 라벨 (`.txt`) 저장 경로 |
+| `autolabeled_data/visualized/` | 시각화된 결과 이미지 저장 경로 |
+| `retrain_dataset/` | 재학습을 위한 데이터셋 (images/train, labels/train) |
+| `auto_label_and_retrain.py` | 자동 라벨링 + 재학습 통합 파이프라인 |
+| `server.py` or `main.py` | FastAPI 기반 서버, 예측 및 GCS 업로드 처리 |
+| `Cloud Function` | GCS 트리거 기반 이미지 수 감지 및 서버 `/retrain` 호출 |
 
 ---
 
-## ⚙️ 설치 방법
+## ⚙️ 설치
 
 ```bash
-pip install ultralytics opencv-python
+pip install ultralytics opencv-python fastapi python-multipart python-dotenv pillow google-cloud-storage pymongo
