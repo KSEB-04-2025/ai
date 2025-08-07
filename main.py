@@ -74,6 +74,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     predictions = []
     for result in results:
         boxes = result.boxes.cpu().numpy()
+        print(f"[INFO] YOLO 결과 → box 수: {len(boxes)}")  # ← 여기가 핵심!
         for box in boxes:
             cls = int(box.cls[0])
             conf = float(box.conf[0])
