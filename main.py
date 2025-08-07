@@ -60,12 +60,14 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     try:
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     except Exception as e:
+        print(f"[이미지 열기 실패] {e}")
         return JSONResponse(status_code=400, content={"message": f"이미지 열기 실패: {e}"})
 
     # YOLO 예측
     try:
         results = model(img, conf=0.44, iou=0.3)
     except Exception as e:
+        print(f"[YOLO 예측 실패] {e}")
         return JSONResponse(status_code=500, content={"message": f"YOLO 예측 실패: {e}"})
 
     # 예측 결과 파싱
