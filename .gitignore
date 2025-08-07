@@ -9,6 +9,10 @@ ENV/
 dist/
 build/
 
+# YOLO 관련 무시
+runs/
+dataset/
+
 # IDE/에디터 설정
 .idea/
 .vscode/
