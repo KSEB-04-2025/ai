@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 import os
 import subprocess
 
-# ✅ 환경변수 로드 (.env에서)
+
 load_dotenv()
 
-GCS_BUCKET = os.getenv("GCS_BUCKET")                     # 예: "zezeone_images"
-GCS_RETRAIN_FOLDER = os.getenv("GCS_RETRAIN_FOLDER")     # 예: "retrain"
-LOCAL_DATA = "incoming_data"                             # 로컬 다운로드 경로
+GCS_BUCKET = os.getenv("GCS_BUCKET")                     
+GCS_RETRAIN_FOLDER = os.getenv("GCS_RETRAIN_FOLDER")     
+LOCAL_DATA = "incoming_data"                             
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
