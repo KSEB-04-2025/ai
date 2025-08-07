@@ -5,7 +5,7 @@ import os
 model = YOLO("model/best.pt")
 
 #  예측할 이미지 경로 (단일 파일)
-image_path = "이미지경로"
+image_path = r"C:\Users\happy\OneDrive\사진\Camera Roll\WIN_20250722_16_09_50_Pro.jpg"
 image_name = os.path.basename(image_path)
 
 #  결과 저장 폴더

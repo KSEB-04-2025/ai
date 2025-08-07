@@ -1,12 +1,12 @@
 from ultralytics import YOLO
 
 def main():
-    model = YOLO('yolov8s.pt')  
+    model = YOLO('yolov8n.pt')  
 
     model.train(
         data='dataset/defect.yaml',
         epochs=30,                
-        imgsz=1024,               
+        imgsz=640,               
         batch=8,                  
         name='defect_model_s',    
         project='runs/train',
