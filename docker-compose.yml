@@ -15,6 +15,7 @@ services:
       - app-network
     volumes:
       - /home/zezeonekesb/service-account.json:/app/service-account.json
+      - /home/zezeonekesb/ai/model:/app/model
 
 networks:
   app-network:

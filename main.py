@@ -26,7 +26,7 @@ if not GCS_BUCKET:
 
 # ───────── 기본 설정 ─────────
 app = FastAPI()
-model = YOLO("model/best.pt")  # YOLOv8 모델 로드
+model = YOLO("/app/model/best.pt")  # YOLOv8 모델 로드
 print("🔥🔥🔥 This is the NEW main.py 🔥🔥🔥")  # <-- 여기에 삽입
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
