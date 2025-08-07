@@ -16,6 +16,7 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 GCS_BUCKET = os.getenv("GCS_BUCKET")  # GCS 버킷 이름
 GCS_FOLDER = os.getenv("GCS_FOLDER")
+GCS_RETRAIN_FOLDER = os.getenv("GCS_RETRAIN_FOLDER")  # GCS 재학습 폴더 이름
 GCS_KEY_PATH = "service-account.json"  # GCS 서비스 계정 키 파일 경로
 
 if not MONGO_URI:
@@ -126,6 +127,14 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
     except Exception as e:
         print("[경고] Annotated 이미지 저장 또는 GCS 업로드 실패:", e)
 
+    # 원본 이미지 GCS 업로드
+    try:
+        retrain_blob = bucket.blob(f"{GCS_RETRAIN_FOLDER}/{filename}")
+        retrain_blob.upload_from_filename(file_path)
+        print(f"[INFO] 원본 이미지 {GCS_RETRAIN_FOLDER}에 업로드 완료")
+    except Exception as e:
+        print(f"[ERROR] 원본 이미지 업로드 실패: {e}")
+        
     # 한국시간 KST 생성
     KST = timezone(timedelta(hours=9))
     now_kst = datetime.now(KST)
