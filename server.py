@@ -13,7 +13,8 @@ GCS_RETRAIN_FOLDER = os.getenv("GCS_RETRAIN_FOLDER")
 LOCAL_DATA = "incoming_data"                             
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+GCS_KEY_PATH = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "service-account.json")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GCS_KEY_PATH
 
 
 os.makedirs(LOCAL_DATA, exist_ok=True)
