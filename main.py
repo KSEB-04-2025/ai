@@ -8,7 +8,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from uuid import uuid4
 from google.cloud import storage
-import os, io
+import os, io, threading, time
 import cv2
 
 # ───────── 환경 변수 로딩 ─────────
@@ -26,7 +26,6 @@ if not GCS_BUCKET:
 
 # ───────── 기본 설정 ─────────
 app = FastAPI()
-model = YOLO("/app/model/best.pt")  # YOLOv8 모델 로드
 print("🔥🔥🔥 This is the NEW main.py 🔥🔥🔥")  # <-- 여기에 삽입
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -38,6 +37,32 @@ mongo_col = client["zezeone"]["results"]
 # ───────── GCS 클라이언트 ─────────
 storage_client = storage.Client.from_service_account_json(GCS_KEY_PATH)
 bucket = storage_client.bucket(GCS_BUCKET)
+
+# ───────── 모델 초기화 ─────────
+_model = YOLO("/app/model/best.pt")  # 초기 모델 로드
+_model_mtime = os.path.getmtime("/app/model/best.pt")  # 모델 파일의 마지막 수정 시간
+_model_lock = threading.Lock()
+
+def get_model():
+    """요청 시마다 파일 mtime 확인 → 바뀌었으면 안전하게 핫리로드"""
+    global _model, _model_mtime
+    try:
+        mtime = os.path.getmtime("/app/model/best.pt")
+    except FileNotFoundError:
+        # 모델이 잠시 교체 중(.part)일 수 있음 → 다음 요청에서 다시 시도
+        return _model
+    if mtime != _model_mtime:
+        with _model_lock:
+            # double-check
+            try:
+                m2 = os.path.getmtime("/app/model/best.pt")
+            except FileNotFoundError:
+                return _model
+            if m2 != _model_mtime:
+                _model = YOLO("/app/model/best.pt")
+                _model_mtime = m2
+                print(f"[MODEL] auto-reloaded at {time.strftime('%F %T')}")
+    return _model
 
 # ───────── Health ─────────
 @app.head("/health")
@@ -65,7 +90,8 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
 
     # YOLO 예측
     try:
-        results = model(img, conf=0.44, iou=0.3)
+        mdl = get_model()
+        results = mdl(img, conf=0.44, iou=0.3)
     except Exception as e:
         print(f"[YOLO 예측 실패] {e}")
         return JSONResponse(status_code=500, content={"message": f"YOLO 예측 실패: {e}"})
@@ -81,7 +107,7 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
             xyxy = box.xyxy[0].tolist()
             predictions.append({
                 "class_id": cls,
-                "class_name": model.names[cls],
+                "class_name": mdl.names[cls],
                 "confidence": conf,
                 "bbox": xyxy
             })
@@ -169,6 +195,9 @@ async def upload_and_predict(request: Request, file: UploadFile = File(...)):
         "n_spots": len(predictions),
         "gcs_url": gcs_url,
         "predictions": predictions
-    })
+    }                 
+    )
+    
+    
 
 
