@@ -6,3 +6,8 @@ pillow
 pymongo
 python-multipart
 ultralytics==8.*
+onnx==1.16.0
+onnxruntime-gpu
+numpy
+opencv-python
+python-dotenv
