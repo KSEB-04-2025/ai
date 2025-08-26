@@ -34,8 +34,8 @@ def train_baseline():
     os.makedirs(baseline_dir, exist_ok=True)
     shutil.copy(best_model_path, baseline_model_path)
 
-    print(f"\n✅ YOLO best.pt 저장 위치: {best_model_path}")
-    print(f"📦 baseline 기준 모델 복사 위치: {baseline_model_path}")
+    print(f"\n YOLO best.pt 저장 위치: {best_model_path}")
+    print(f" baseline 기준 모델 복사 위치: {baseline_model_path}")
 
 if __name__ == "__main__":
     train_baseline()
